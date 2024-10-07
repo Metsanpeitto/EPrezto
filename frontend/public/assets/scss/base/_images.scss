@@ -1,0 +1,33 @@
+.avatar {
+  margin: 0px auto;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: middle;
+  cursor: default;
+  position: relative;
+  width: 64px;
+  height: 64px;
+  line-height: 64px;
+  font-size: 32px;
+
+  img {
+    border: solid 2px $color-white;
+    border-radius: 50%;
+    background-color: rgb(35, 28, 76);
+    width: 64px;
+    height: 64px;
+  }
+}
+
+.avatar1 {
+  transform: translateX(25%);
+  z-index: 1;
+}
+
+.bot {
+  img {
+         width: 32px;
+            height: 32px;
+            color: rgb(197, 35, 35) !important;
+  }
+}

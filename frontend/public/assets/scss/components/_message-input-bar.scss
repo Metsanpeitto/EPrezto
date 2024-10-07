@@ -1,0 +1,60 @@
+.message-input-bar {
+  background-color: $color-white;
+  min-height: 48px;
+  max-height: 200px;
+  padding: 0px 20px;
+  width: 100%;
+  box-sizing: border-box;
+
+  &__container {
+    display: flex;
+
+    &__textarea {
+      appearance: none;
+      background-color: white;
+      color: $color-text-antracite;
+      box-sizing: border-box;
+      resize: none;
+      font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      font-size: 14px;
+      font-weight: normal;
+      inset: 0px;
+      line-height: 20px;
+      max-height: 200px;
+      max-width: 100%;
+      outline: none;
+      overflow-wrap: break-word;
+      padding: 14px 25% 14px 16px;
+      position: absolute;
+      white-space: pre-wrap;
+      border-radius: 16px;
+      border: 2px solid $color-text-antracite_light;
+      transition: border-color 0.3s ease;
+
+      &:focus {
+        border-color: $color-blue; 
+        outline: none;
+      }
+    }
+
+    &__icons {
+      align-items: flex-end;
+      display: flex;
+      inset: 0px 0px 0px auto;
+      padding: 0px 8px 0px 7px;
+      position: absolute;
+      transform: translate(0px,32px);
+      gap: 12px;
+
+      .icon {
+        color: rgb(118, 118, 118);
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+        opacity: 0.8;
+        transition: opacity 200ms;
+        width: 16px;
+      }
+    }
+  }
+}

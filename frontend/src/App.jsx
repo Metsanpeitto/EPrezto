@@ -1,10 +1,12 @@
-import Chatbot from "./components/Chatbot";
-import "./App.css";
+import Chatbot from "./layouts/Chatbot";
+import "./app.scss";
 
 function App() {
   return (
     <div className="App">
-      <h1>Customer Support Chatbot</h1>
+      <div className="background">
+        <img src={`/assets/images/background.png`} alt="avatar-girl" />
+      </div>
       <Chatbot />
     </div>
   );
