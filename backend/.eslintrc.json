@@ -1,0 +1,74 @@
+{
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "node": true, // Enable Node.js global variables and Node.js scoping
+    "es2021": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module" // Allows the use of ES modules (import/export)
+  },
+  "rules": {
+    // Possible Errors
+    "no-console": "off", // Allow console (commonly used in Node.js apps)
+    "no-debugger": "warn", // Warn on debugger statements
+    "no-unused-vars": "warn", // Warn on unused variables, useful for cleanup
+    // Best Practices
+    "eqeqeq": "error", // Require strict equality (`===` and `!==`)
+    "curly": "error", // Require consistent use of curly braces for blocks
+    "no-throw-literal": "error", // Prevent throwing literals as errors
+    // Stylistic Choices
+    "semi": [
+      "error",
+      "always"
+    ], // Require semicolons
+    "quotes": [
+      "error",
+      "single"
+    ], // Enforce single quotes for strings
+    "indent": [
+      "error",
+      2
+    ], // Enforce 2-space indentation
+    "comma-dangle": [
+      "error",
+      "never"
+    ], // No dangling commas
+    "no-trailing-spaces": "error", // No trailing spaces
+    "eol-last": [
+      "error",
+      "always"
+    ], // Enforce a newline at the end of files
+    "space-before-function-paren": [
+      "error",
+      "never"
+    ], // No space before function parentheses
+    // Node.js Specific
+    "callback-return": "warn", // Enforce return after callback
+    "handle-callback-err": "warn", // Warn when errors are not handled in callbacks
+    "no-new-require": "error", // Disallow `new` with `require`
+    "no-path-concat": "error", // Prevent `__dirname` and `__filename` string concatenation
+    // ECMAScript 6+
+    "no-var": "error", // Enforce using `let` or `const` instead of `var`
+    "prefer-const": "error", // Prefer `const` when variables are not reassigned
+    "no-undef": "error", // Highlight undefined variables and functions
+    "arrow-spacing": [
+      "error",
+      {
+        "before": true,
+        "after": true
+      }
+    ], // Consistent spacing in arrow functions
+    "object-shorthand": "error", // Enforce use of shorthand syntax where possible
+    "no-duplicate-imports": "error", // Disallow duplicate imports
+    "no-use-before-define": [
+      "error",
+      {
+        "functions": false,
+        "classes": true
+      }
+    ]
+  }
+}

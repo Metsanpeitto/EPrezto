@@ -12,7 +12,7 @@ const Chatbot = () => {
 
     try {
       const response = await axios.post("http://localhost:5000/api/chatbot", {
-        identifier: input,
+        input: input,
       });
       setMessages((prev) => [
         ...prev,
