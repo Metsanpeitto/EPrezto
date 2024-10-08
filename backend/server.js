@@ -1,6 +1,7 @@
 // backend/server.js
 require('dotenv').config();
 const express = require('express');
+const serverless = require('serverless-http');
 const cors = require('cors');
 const path = require('path');
 
@@ -32,4 +33,4 @@ const start = async () => {
 
 start()
 
-module.exports = app
+module.exports = serverless(app)

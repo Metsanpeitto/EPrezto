@@ -1,0 +1,64 @@
+.chat-window {
+  position: relative;
+  text-align: left;
+  float: left;
+  width: 100%;
+  max-height: 65vh;
+  resize: none;
+  overflow-y: scroll;
+
+  &__message-wrapper {
+    display: flex;
+    width: 100%;
+    position: relative;
+    margin: 0px 0px 16px 0px;
+
+    &__container {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+      position: relative;
+
+      &__bot-bubble {
+        display: flex;
+        gap: 16px;
+        &__icon {
+          align-content: flex-end;
+          padding: 0px 0px 10px;
+        }
+
+        &__text {
+          padding: 17px 20px;
+          border-radius: 10px;
+          position: relative;
+          display: inline-block;
+          width: auto;
+          max-width: 75%;
+          color: rgb(0, 0, 0);
+          background-color: rgb(242, 242, 242);
+          font-size: 14px;
+          line-height: 1.4;
+          margin: 0px;
+          min-height: 10px;
+          justify-content: flex-end;
+        }
+      }
+
+      &__user-bubble {
+        display: flex;
+        padding: 17px 20px;
+        border-radius: 10px;
+        position: relative;
+        display: inline-block;
+        width: auto;
+        max-width: 75%;
+        color: $color-white;
+        background-color: $color-blue;
+        font-size: 14px;
+        line-height: 1.4;
+        margin: 0px;
+        min-height: 10px;
+      }
+    }
+  }
+}
