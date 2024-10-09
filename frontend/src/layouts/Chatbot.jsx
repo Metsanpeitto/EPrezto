@@ -4,6 +4,7 @@ import { Header, ChatWindow, MessageInputBar } from "../components/";
 
 const Chatbot = () => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
+  //const BASE_URL = import.meta.env.VITE_BASE_URL_DEV;
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const chatWindowRef = useRef(null);
