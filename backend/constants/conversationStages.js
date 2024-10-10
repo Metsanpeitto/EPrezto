@@ -1,4 +1,4 @@
-exports.ConversationStages = {
+const ConversationStages = {
   INTRODUCTION: "INTRODUCTION",
   DATA_REQUEST: "DATA_REQUEST",
   ACTION_REQUEST: "ACTION_REQUEST",
@@ -6,3 +6,5 @@ exports.ConversationStages = {
   TAKE_ACTION: "TAKE_ACTION",
   CONCLUSION: "CONCLUSION"
 };
+
+module.exports = { ConversationStages }

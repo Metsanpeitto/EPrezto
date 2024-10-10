@@ -38,9 +38,14 @@
           background-color: rgb(242, 242, 242);
           font-size: 14px;
           line-height: 1.4;
+          line-break: strict;
           margin: 0px;
           min-height: 10px;
           justify-content: flex-end;
+
+          .url {
+            line-break: anywhere;
+          }
         }
       }
 

@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import authorizedAxios from "../api/axios"; // Make sure this is configured with `withCredentials`
 import { Header, ChatWindow, MessageInputBar } from "../components/";
+import { formatMessageWithLinks } from "../utils/formatMessageWithLinks";
 
 const Chatbot = () => {
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
-  //const BASE_URL = import.meta.env.VITE_BASE_URL_DEV;
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const chatWindowRef = useRef(null);
@@ -45,12 +44,15 @@ const Chatbot = () => {
         setMessages((prev) => [...prev, { user: "You", text: input }]);
 
         try {
-          const response = await axios.post(BASE_URL, {
+          const response = await authorizedAxios.post("/chatbot", {
             input: input,
           });
           setMessages((prev) => [
             ...prev,
-            { user: "Bot", text: response.data.botMessage },
+            {
+              user: "Bot",
+              text: formatMessageWithLinks(response?.data?.botMessage),
+            },
           ]);
         } catch (error) {
           setMessages((prev) => [

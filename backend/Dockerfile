@@ -12,6 +12,9 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 # Copy the rest of the backend files
 COPY . .
 
-EXPOSE 8080
+ENV NODE_ENV=production
+
+EXPOSE 5555
+
 CMD ["node", "server.js"] # Adjust to your entry point file
 

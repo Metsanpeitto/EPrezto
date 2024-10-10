@@ -300,7 +300,6 @@ const customers = [
       "TotalPrima": 70.9245283018868,
       "tipoCliente": "Ind",
       "fechConductAdic": " ",
-
       "IPCliente": "192.168.1.1",
       "EstadoCivil": "Soltero",
       "Sexo": "MASCULINO",

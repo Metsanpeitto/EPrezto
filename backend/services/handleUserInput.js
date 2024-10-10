@@ -1,26 +1,29 @@
 const { plateRegex, emailRegex, nameRegex } = require("../constants/regex");
 const { ConversationStages } = require("../constants/conversationStages");
+const { initializeConversationState } = require('../middlewares/conversationStateManager')
 const {
   fetchCustomerByPlate,
   fetchCustomerByEmail,
   fetchCustomerByName,
-} = require("../services/agentHelper");
-const { askAgent } = require("../services/askAgent");
-const { queryLLMBase, queryLLMActionYesOrNo, queryLLMSuggestion } = require("../services/queries")
+} = require("./agentHelper");
+const { askAgent } = require("./askAgent");
+const { queryLLMActionYesOrNo, queryLLMSuggestion } = require("./queries")
 const { filterSuggestion } = require('../utils/filterSuggestion')
-
-const conversationState = {
-  stage: ConversationStages.INTRODUCTION,
-  policyData: null,
-  policyLink: null,
-};
 
 const PREGUNTA_OTRA_ACCION =
   "¿Deseas realizar otra acción? Puedo ayudarte a completar el pago o proporcionarte más información sobre la póliza.";
 
-const processPolicyData = (policyStatus, policyMessage, policyLink) => {
-  conversationState.policyLink = policyLink;
-  conversationState.stage = ConversationStages.ACTION_REQUEST;
+const updateConversationStage = (req, newStage) => {
+  try {
+    req.session.conversationState.stage = newStage;
+  } catch (error) {
+    console.log("conversationState.stage error:", error)
+  }
+};
+
+const processPolicyData = (req, policyStatus, policyMessage, policyLink) => {
+  req.session.conversationState.policyLink = policyLink;
+  updateConversationStage(req, ConversationStages.ACTION_REQUEST);
   if (policyStatus && policyMessage) {
     return `${policyMessage}. Quisieras emitir la poliza?`;
   }
@@ -29,16 +32,16 @@ const processPolicyData = (policyStatus, policyMessage, policyLink) => {
   }
 };
 
-const processPolicyDataResponse = (typeOfInput) => {
-  const { policyStatus, policyMessage, policyLink } =
-    conversationState.policyData;
+const processPolicyDataResponse = (req, typeOfInput) => {
+  const { policyStatus, policyMessage, policyLink } = req.session.conversationState
 
   if (policyStatus || policyMessage) {
-    const policyDataResponse = processPolicyData(policyStatus, policyMessage, policyLink);
-    return this.handleUserInput(policyDataResponse)
+    const policyDataResponse = processPolicyData(req, policyStatus, policyMessage, policyLink);
+    return this.handleUserInput(req, policyDataResponse)
   }
   if (!policyStatus && !policyMessage) {
-    conversationState.stage = ConversationStages.DATA_REQUEST;
+    updateConversationStage(req, ConversationStages.DATA_REQUEST)
+
     switch (typeOfInput) {
       case "plate":
         return "No se encontró información para esa placa. Por favor intenta con un email o nombre.";
@@ -54,43 +57,54 @@ const processPolicyDataResponse = (typeOfInput) => {
   }
 };
 
+const populateSessionConversationStatePolicyData = (req, policyData) => {
+  const { policyStatus, policyLink, policyMessage } = policyData
+  req.session.conversationState = {
+    ...req.session.conversationState,
+    policyStatus,
+    policyLink,
+    policyMessage,
+  };
+}
 
-exports.handleUserInput = async (userInput) => {
-  switch (conversationState.stage) {
-    // Respond with a greeting and request for identification
+
+exports.handleUserInput = async (req, userInput) => {
+  initializeConversationState(req)
+  const { stage } = req.session.conversationState
+
+  switch (stage) {
     case ConversationStages.INTRODUCTION:
       const introductionResponse =
         "Buenos días, por favor bríndame el número de placa del auto, email o nombre del cliente.";
-      conversationState.stage = ConversationStages.DATA_REQUEST; // Move to next stage
+      updateConversationStage(req, ConversationStages.DATA_REQUEST);
       return introductionResponse;
 
-    // Check if the input contains plate number, email, or name
     case ConversationStages.DATA_REQUEST:
-      // Fetch customer data based on plate number
       if (userInput.match(plateRegex)) {
         const plate = userInput.match(plateRegex);
-        conversationState.policyData = await fetchCustomerByPlate(plate[0]);
-        return processPolicyDataResponse("plate");
+        const policyData = await fetchCustomerByPlate(plate[0]);
+        populateSessionConversationStatePolicyData(req, policyData)
+        return processPolicyDataResponse(req, "plate");
       }
-      // Fetch customer data based on email
       if (userInput.match(emailRegex)) {
-        const email = userInput.match(emailRegex[0]);
-        conversationState.policyData = await fetchCustomerByEmail(email);
-        return processPolicyDataResponse("email");
+        const email = userInput.match(emailRegex);
+        const policyData = await fetchCustomerByEmail(email[0]);
+        populateSessionConversationStatePolicyData(req, policyData)
+        return processPolicyDataResponse(req, "email");
       }
-      // Fetch customer data based on name
       if (userInput.match(nameRegex)) {
-        const name = userInput.match(nameRegex[0]);
-        conversationState.policyData = await fetchCustomerByName(name);
-        return processPolicyDataResponse("name");
+        const name = userInput.match(nameRegex);
+        const policyData = await fetchCustomerByName(name[0]);
+        populateSessionConversationStatePolicyData(req, policyData)
+        return processPolicyDataResponse(req, "name");
       }
-      conversationState.stage = ConversationStages.DATA_REQUEST;
+      updateConversationStage(req, ConversationStages.DATA_REQUEST);
       return `No se encontró ninguna informacion.
               Por favor proporciona un número de placa, email o nombre del cliente válidos.`;
 
     case ConversationStages.ACTION_REQUEST:
       try {
-        conversationState.stage = ConversationStages.ACTION_CONFIRMATION;
+        updateConversationStage(req, ConversationStages.ACTION_CONFIRMATION);
         const responseSuggestedAction = await askAgent(userInput, queryLLMSuggestion);
         console.log(responseSuggestedAction)
         const filteredResponse = filterSuggestion(responseSuggestedAction)
@@ -101,22 +115,20 @@ exports.handleUserInput = async (userInput) => {
       }
 
     case ConversationStages.ACTION_CONFIRMATION:
-      // Suggest actions based on customer data
       try {
         const negativeOrPositiveAnswer = await askAgent(userInput, queryLLMActionYesOrNo);
         if (negativeOrPositiveAnswer === "Si" || userInput.toLowerCase() === "si") {
-          const policyLink = conversationState.policyLink;
-          conversationState.stage = ConversationStages.CONCLUSION;
+          const policyLink = req.session.conversationState.policyLink;
+          updateConversationStage(req, ConversationStages.CONCLUSION);
           if (policyLink) {
-            return `Este es el link a la póliza: ${policyLink}.
-            ${PREGUNTA_OTRA_ACCION}`;
+            return `Este es el link a la póliza: ${policyLink}.${PREGUNTA_OTRA_ACCION}`;
           }
           return PREGUNTA_OTRA_ACCION;
         }
 
         if (negativeOrPositiveAnswer === "No" || userInput.toLowerCase() === "no") {
-          conversationState.stage = ConversationStages.CONCLUSION;
-          this.handleUserInput()
+          updateConversationStage(req, ConversationStages.CONCLUSION);
+          this.handleUserInput(req, '')
         }
       } catch (error) {
         console.log(error)
@@ -124,12 +136,11 @@ exports.handleUserInput = async (userInput) => {
       }
 
     case ConversationStages.CONCLUSION:
-      // Conclude the conversation
-      conversationState.stage = ConversationStages.INTRODUCTION;
+      updateConversationStage(req, ConversationStages.INTRODUCTION);
       return "Gracias por tu consulta. Si necesitas más ayuda, no dudes en consultarme.";
 
     default:
-      conversationState.stage = ConversationStages.INTRODUCTION;
+      updateConversationStage(req, ConversationStages.INTRODUCTION);
       return askAgent(userInput.queryLLMBase);
   }
 };
