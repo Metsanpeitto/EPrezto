@@ -17,6 +17,8 @@ the quality of the responses and also analyze some of the user queries.
 Building this demo is one of four different tasks of the test. And in this README file
 I will place the result of the other 3.
 
+##  Demo
+![Demo](app-img.png)
 
 ## 1 - System Architecture Diagram
 ![Chatbot diagram](ChatbotDiagram.jpg)
