@@ -1,7 +1,5 @@
 # EPrezto
 
-[![Watch the video](https://raw.githubusercontent.com/yourusername/yourrepository/main/assets/thumbnail.jpg)](https://raw.githubusercontent.com/yourusername/yourrepository/main/assets/video.mp4)
-
 This is the front and backend of a basic chatbot that I built as part of a test.
 It is supposed to be for internal use and if developed fully would help to assist the
 agents giving support to the clients and automating some tasks.
@@ -19,9 +17,6 @@ the quality of the responses and also analyze some of the user queries.
 Building this demo is one of four different tasks of the test. And in this README file
 I will place the result of the other 3.
 
-## Demo
-
-[![Watch the video](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v
 
 ## 1 - System Architecture Diagram
 ![Chatbot diagram](ChatbotDiagram.jpg)
